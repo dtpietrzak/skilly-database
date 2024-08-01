@@ -52,14 +52,8 @@ Mkfile.old
 dkms.conf
 
 .vscode
-./build
-build
-*/build
-./data
-data
-*/data
+**/build
+**/data
+**/certs
 .DS_Store
-*/.DS_Store
-./certs
-certs
-*/certs
+**/.DS_Store

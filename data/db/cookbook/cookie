@@ -1,0 +1,37 @@
+{
+    "ingredients": [
+        {
+            "name": "flour",
+            "measurement": "1 cup"
+        },
+        {
+            "name": "egg",
+            "measurement": "42"
+        },
+        {
+            "name": "white sugar",
+            "measurement": "12 cup"
+        },
+        {
+            "name": "chocolate chips",
+            "measurement": "12 cups"
+        }
+    ],
+    "comments": {
+        "chef roger": {
+            "date": "2020-07-11",
+            "words": "some words"
+        },
+        "amy": {
+            "date": "2020-07-11",
+            "words": "some kind words"
+        },
+        "johnathan": {
+            "date": "2020-04-20",
+            "words": "some kind of words"
+        }
+    },
+    "rating": 3,
+    "creator": "silas",
+    "good": false
+}

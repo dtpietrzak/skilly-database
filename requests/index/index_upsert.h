@@ -1,0 +1,21 @@
+#include <errno.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sdb_utils.h>
+
+#include "utils/index_a_doc.h"
+#include "utils/index_utils.h"
+#include "utils/index_meta_handlers.h"
+
+#ifdef _WIN32
+#include <direct.h>  // For Windows mkdir
+#define mkdir(directory, mode) _mkdir(directory)
+#else
+#include <libgen.h>    // For dirname
+#include <sys/stat.h>  // For mkdir
+#endif
+
+int handle_request_index_upsert(sdb_http_request_t* http_request,
+                                sdb_http_response_t* http_response);

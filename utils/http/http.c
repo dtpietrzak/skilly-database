@@ -61,7 +61,7 @@ void validate_auth_header(const char *request_str,
 
 // Validate the queries in the HTTP request
 // If the queries are invalid, set the invalid message
-// If the queries are valid, set the id and / or db name
+// If the queries are valid, set the id and / or col name
 //
 // Returns the sdb_query_params_t struct
 // if the queries are invalid, the invalid field will be set (not NULL)
@@ -76,7 +76,7 @@ sdb_query_params_t validate_and_parse_queries(sdb_http_request_t *http_request,
       .key = NULL,
       .value = NULL,
       .query = NULL,
-      .db = NULL,
+      .col = NULL,
       .limit = NULL,
       .offset = NULL,
       .sort = NULL,
@@ -107,7 +107,7 @@ sdb_query_params_t validate_and_parse_queries(sdb_http_request_t *http_request,
     if (strcmp(params[i], "query") == 0) {
       query_is_required = true;
     }
-    if (strcmp(params[i], "db") == 0) {
+    if (strcmp(params[i], "col") == 0) {
       db_is_required = true;
     }
 
@@ -123,8 +123,8 @@ sdb_query_params_t validate_and_parse_queries(sdb_http_request_t *http_request,
     if (!strcmp(http_request->queries[i][0], "query")) {
       sdb_query_params_t.query = http_request->queries[i][1];
     }
-    if (!strcmp(http_request->queries[i][0], "db")) {
-      sdb_query_params_t.db = http_request->queries[i][1];
+    if (!strcmp(http_request->queries[i][0], "col")) {
+      sdb_query_params_t.col = http_request->queries[i][1];
     }
     if (!strcmp(http_request->queries[i][0], "limit")) {
       sdb_query_params_t.limit = http_request->queries[i][1];
@@ -198,21 +198,22 @@ sdb_query_params_t validate_and_parse_queries(sdb_http_request_t *http_request,
   }
 
   if (db_is_required) {
-    if (sdb_query_params_t.db == NULL) {
-      sdb_query_params_t.invalid = "Db name is missing";
+    if (sdb_query_params_t.col == NULL) {
+      sdb_query_params_t.invalid = "Collection name is missing";
       fprintf(stderr, "%s", sdb_query_params_t.invalid);
       return sdb_query_params_t;
-    } else if (contains_invalid_chars(sdb_query_params_t.db,
+    } else if (contains_invalid_chars(sdb_query_params_t.col,
                                       INVALID_CHARS_DIRS_AND_FILES)) {
       sdb_query_params_t.invalid =
-          "Db name contains invalid characters (cannot contain: "
+          "Collection name contains invalid characters (cannot contain: "
           "\\/:*?\"<>|)";
       fprintf(stderr, "%s", sdb_query_params_t.invalid);
       return sdb_query_params_t;
     }
-    if (contains_periods(sdb_query_params_t.db)) {
+    if (contains_periods(sdb_query_params_t.col)) {
       sdb_query_params_t.invalid =
-          "Db name contains invalid characters (cannot contain a period)";
+          "Collection name contains invalid characters (cannot contain a "
+          "period)";
       fprintf(stderr, "%s", sdb_query_params_t.invalid);
       return sdb_query_params_t;
     }

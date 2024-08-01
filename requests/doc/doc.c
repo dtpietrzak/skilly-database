@@ -4,7 +4,7 @@
 
 int handle_request_doc(sdb_http_request_t* http_request,
                        sdb_http_response_t* http_response) {
-  const char* params[] = {"id", "db"};
+  const char* params[] = {"id", "col"};
 
   sdb_query_params_t queries =
       validate_and_parse_queries(http_request, params, 2);
@@ -18,8 +18,8 @@ int handle_request_doc(sdb_http_request_t* http_request,
   sdb_stater_t* stater_db_path = calloc(1, sizeof(sdb_stater_t));
   stater_db_path->error_body = "Failed to derive path";
   stater_db_path->error_status = 500;
-  if (!fs_path(http_response, stater_db_path, &db_path, 3, "db", queries.db,
-               queries.id)) {
+  if (!fs_path(http_response, stater_db_path, &db_path, 3, "collection",
+               queries.col, queries.id)) {
     return 1;
   }
 

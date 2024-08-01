@@ -6,7 +6,7 @@ int sort_descend(const void* a, const void* b) { return (*(int*)a - *(int*)b); }
 
 int handle_query_number(sdb_http_request_t* http_request, sdb_http_response_t* http_response,
                         sdb_query_params_t* queries) {
-  char* index_path = derive_path(3, "index", queries->db, queries->key);
+  char* index_path = derive_path(3, "index", queries->col, queries->key);
 
   // check if queries.value can be converted to a number
   int query_value = 0;
@@ -19,7 +19,7 @@ int handle_query_number(sdb_http_request_t* http_request, sdb_http_response_t* h
   }
 
   // check that the schema value being checked via queries.key is a number
-  char* schema_path = derive_path(2, "schema", queries->db);
+  char* schema_path = derive_path(2, "schema", queries->col);
   const JSON_Value* schema = json_parse_file(schema_path);
   const JSON_Object* schema_obj = json_value_get_object(schema);
   const JSON_Value* schema_value =
@@ -157,7 +157,7 @@ int handle_query_number(sdb_http_request_t* http_request, sdb_http_response_t* h
   JSON_Array* documents_array = json_value_get_array(documents);
   for (int i = 0; i < filtered_count; i++) {
     char* document_path =
-        derive_path(4, "index", queries->db, queries->key, filenames_to_get[i]);
+        derive_path(4, "index", queries->col, queries->key, filenames_to_get[i]);
     JSON_Value* document = json_parse_file(document_path);
     json_array_append_value(documents_array, document);
     free(document_path);

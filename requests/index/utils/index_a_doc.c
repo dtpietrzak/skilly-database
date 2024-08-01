@@ -52,7 +52,7 @@ const char* get_document_dot_value_as_string(sdb_http_response_t* http_response,
 
 int index_a_doc(sdb_http_response_t* http_response, const char* db_name,
                 const char* filename, const char* request_meta_string) {
-  const char* file_path = derive_path(3, "db", db_name, filename);
+  const char* file_path = derive_path(3, "collection", db_name, filename);
   if (file_path == NULL) {
     http_response->status = 500;
     s_set(&http_response->body,

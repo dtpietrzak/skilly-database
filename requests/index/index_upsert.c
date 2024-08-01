@@ -4,7 +4,7 @@
 
 int handle_request_index_upsert(sdb_http_request_t* http_request,
                                 sdb_http_response_t* http_response) {
-  const char* params[] = {"db"};
+  const char* params[] = {"col"};
   sdb_query_params_t queries =
       validate_and_parse_queries(http_request, params, 1);
   if (queries.invalid != NULL) {
@@ -13,7 +13,14 @@ int handle_request_index_upsert(sdb_http_request_t* http_request,
     return 1;
   }
 
-  const char* index_meta_path = derive_path(3, "index", queries.db, "_meta");
+  char* index_meta_path = NULL;
+  sdb_stater_t* stater_index_meta_path = calloc(1, sizeof(sdb_stater_t));
+  stater_index_meta_path->error_body = "Failed to derive index _meta path";
+  stater_index_meta_path->error_status = 500;
+  if (!fs_path(http_response, stater_index_meta_path, &index_meta_path, 3,
+               "index", queries.col, "_meta")) {
+    return 1;
+  }
 
   JSON_Array_With_Count request_array_with_count;
   if (get_json_array_with_count(http_response, http_request->body.value,
@@ -21,7 +28,15 @@ int handle_request_index_upsert(sdb_http_request_t* http_request,
     return 1;
   }
 
-  const char* schema_path = derive_path(2, "schema", queries.db);
+  char* schema_path = NULL;
+  sdb_stater_t* stater_schema_path = calloc(1, sizeof(sdb_stater_t));
+  stater_schema_path->error_body = "Failed to derive index _meta path";
+  stater_schema_path->error_status = 500;
+  if (!fs_path(http_response, stater_schema_path, &schema_path, 2, "schema",
+               queries.col)) {
+    return 1;
+  }
+
   char* schema_content =
       get_file_content(http_response, schema_path, "Schema file not found",
                        "Failed to read schema file");
@@ -62,7 +77,15 @@ int handle_request_index_upsert(sdb_http_request_t* http_request,
 
   // now actually index the new files
   // get a list of all the files in the db_path directory
-  const char* db_path = derive_path(2, "db", queries.db);
+  char* db_path = NULL;
+  sdb_stater_t* stater_db_path = calloc(1, sizeof(sdb_stater_t));
+  stater_db_path->error_body = "Failed to derive index _meta path";
+  stater_db_path->error_status = 500;
+  if (!fs_path(http_response, stater_db_path, &db_path, 2, "collection",
+               queries.col)) {
+    return 1;
+  }
+
   int file_count;
   char** filenames = get_filenames(db_path, &file_count);
 
@@ -78,7 +101,7 @@ int handle_request_index_upsert(sdb_http_request_t* http_request,
           return 1;
         }
 
-        int index_a_doc_status = index_a_doc(http_response, queries.db,
+        int index_a_doc_status = index_a_doc(http_response, queries.col,
                                              filenames[j], request_meta_string);
         if (index_a_doc_status != 0) {
           free_filenames(filenames, file_count);

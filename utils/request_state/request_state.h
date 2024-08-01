@@ -51,7 +51,7 @@ typedef struct {
   char* key;
   char* value;
   char* query;
-  char* db;
+  char* col;
   char* limit;
   char* offset;
   char* sort;

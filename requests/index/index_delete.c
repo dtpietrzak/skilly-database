@@ -4,7 +4,7 @@
 
 int handle_request_index_delete(sdb_http_request_t* http_request,
                                 sdb_http_response_t* http_response) {
-  const char* params[] = {"db"};
+  const char* params[] = {"col"};
   sdb_query_params_t queries =
       validate_and_parse_queries(http_request, params, 1);
   if (queries.invalid != NULL) {
@@ -13,7 +13,14 @@ int handle_request_index_delete(sdb_http_request_t* http_request,
     return 1;
   }
 
-  const char* index_meta_path = derive_path(3, "index", queries.db, "_meta");
+  char* index_meta_path = NULL;
+  sdb_stater_t* stater_index_meta_path = calloc(1, sizeof(sdb_stater_t));
+  stater_index_meta_path->error_body = "Failed to derive index _meta path";
+  stater_index_meta_path->error_status = 500;
+  if (!fs_path(http_response, stater_index_meta_path, &index_meta_path, 3,
+               "index", queries.col, "_meta")) {
+    return 1;
+  }
 
   JSON_Array_With_Count request_array_with_count;
   if (get_json_array_with_count(http_response, http_request->body.value,
@@ -37,17 +44,16 @@ int handle_request_index_delete(sdb_http_request_t* http_request,
   // delete the index files and directory
   for (int i = 0;
        i < updated_json_value_with_removed_items->removed_items_count; i++) {
-    printf("removed item: %s\n",
-           updated_json_value_with_removed_items->removed_items[i]);
-    char* removed_item_path =
-        derive_path(3, "index", queries.db,
-                    updated_json_value_with_removed_items->removed_items[i]);
-    if (removed_item_path == NULL) {
+    char* removed_item_path = NULL;
+    sdb_stater_t* stater_removed_item_path = calloc(1, sizeof(sdb_stater_t));
+    stater_removed_item_path->error_body = "Failed to derive removed item path";
+    stater_removed_item_path->error_status = 500;
+    if (!fs_path(http_response, stater_removed_item_path, &removed_item_path, 3,
+                 "index", queries.col,
+                 updated_json_value_with_removed_items->removed_items[i])) {
       free_removed_items(
           updated_json_value_with_removed_items->removed_items,
           updated_json_value_with_removed_items->removed_items_count);
-      http_response->status = 500;
-      s_set(&http_response->body, "Failed to derive removed item path");
       return 1;
     }
 
@@ -61,7 +67,7 @@ int handle_request_index_delete(sdb_http_request_t* http_request,
   }
 
   // convert the updated json array to a string
-  char* updated_json = json_serialize_to_string(updated_json_value);
+  const char* updated_json = json_serialize_to_string(updated_json_value);
   if (updated_json == NULL) {
     // free_removed_items(removed_items, removed_items_count);
     http_response->status = 500;

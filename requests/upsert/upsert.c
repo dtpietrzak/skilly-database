@@ -11,7 +11,7 @@ int handle_request_upsert(sdb_http_request_t* http_request,
     return 1;
   }
 
-  const char* params[] = {"id", "db"};
+  const char* params[] = {"id", "col"};
   sdb_query_params_t queries =
       validate_and_parse_queries(http_request, params, 2);
   if (queries.invalid != NULL) {
@@ -20,13 +20,13 @@ int handle_request_upsert(sdb_http_request_t* http_request,
     return 1;
   }
 
-  char* db_path = derive_path(3, "db", queries.db, queries.id);
+  char* db_path = derive_path(3, "collection", queries.col, queries.id);
   if (db_path == NULL) {
     http_response->status = 400;
-    s_set(&http_response->body, "Failed to derive db path");
+    s_set(&http_response->body, "Failed to derive col path");
     return 1;
   }
-  char* schema_path = derive_path(2, "schema", queries.db);
+  char* schema_path = derive_path(2, "schema", queries.col);
   if (schema_path == NULL) {
     http_response->status = 400;
     s_set(&http_response->body, "Failed to derive schema path");

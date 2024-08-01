@@ -11,7 +11,7 @@ int handle_request_schema(sdb_http_request_t* http_request,
     return 1;
   }
 
-  const char* params[] = {"db"};
+  const char* params[] = {"col"};
   sdb_query_params_t queries =
       validate_and_parse_queries(http_request, params, 1);
   if (queries.invalid != NULL) {
@@ -20,8 +20,8 @@ int handle_request_schema(sdb_http_request_t* http_request,
     return 1;
   }
 
-  // char* db_path = derive_path("db", queries.db, queries.id);
-  char* schema_path = derive_path(2, "schema", queries.db);
+  // char* db_path = derive_path("collection", queries.col, queries.id);
+  char* schema_path = derive_path(2, "schema", queries.col);
 
   JSON_Value* json_value =
       json_parse_string_with_comments(http_request->body.value);

@@ -27,7 +27,7 @@ int query(const char* query_type, sdb_query_params_t* queries,
 
 int handle_request_query(sdb_http_request_t* http_request,
                          sdb_http_response_t* http_response) {
-  const char* params[] = {"db", "key", "value", "query", "limit", "sort"};
+  const char* params[] = {"col", "key", "value", "query", "limit", "sort"};
   // optionalParams[] = {"limit", "sort"};
 
   sdb_query_params_t queries =

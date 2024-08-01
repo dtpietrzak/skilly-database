@@ -128,11 +128,11 @@ response body:
 100
 ```
 
-### DELETE /delete?db=dessert&id=cake
+### DELETE /delete?col=dessert&id=cake
 
 You can also remove documents. (The flagship feature!)
 
-### POST /index/upsert?db=desserts
+### POST /index/upsert?col=desserts
 
 You can get a little more fancy with creating indexes on document properties.
 
@@ -142,7 +142,7 @@ request body:
 ["inventor", "rating"]
 ```
 
-### GET /find?db=desserts&key=rating&value=10
+### GET /find?col=desserts&key=rating&value=10
 
 Which you can then find directly by property and value.
 

@@ -4,7 +4,7 @@
 
 int handle_request_find(sdb_http_request_t* http_request,
                         sdb_http_response_t* http_response) {
-  const char* params[] = {"db", "key", "value"};
+  const char* params[] = {"col", "key", "value"};
 
   sdb_query_params_t queries =
       validate_and_parse_queries(http_request, params, 3);
@@ -14,13 +14,12 @@ int handle_request_find(sdb_http_request_t* http_request,
     return 1;
   }
 
-  const char* index_path =
-      derive_path(4, "index", queries.db, queries.key, queries.value);
-
-  // if db_path is an error message
-  if (index_path == NULL) {
-    http_response->status = 400;
-    s_set(&http_response->body, "Failed to derive path");
+  char* index_path = NULL;
+  sdb_stater_t* stater_index_path = calloc(1, sizeof(sdb_stater_t));
+  stater_index_path->error_body = "Failed to derive index path";
+  stater_index_path->error_status = 500;
+  if (!fs_path(http_response, stater_index_path, &index_path, 4, "index",
+               queries.col, queries.key, queries.value)) {
     return 1;
   }
 

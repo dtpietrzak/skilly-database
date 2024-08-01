@@ -80,6 +80,7 @@ jobs:
     - if: matrix.build-mode == 'manual'
       shell: bash
       run: |
+        brew install libuv
         ./build_prod.sh
         exit 1
 

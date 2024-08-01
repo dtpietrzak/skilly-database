@@ -2,15 +2,22 @@
 
 #include "../global.c"
 
+// uv_alloc_cb
 void on_alloc_buffer(uv_handle_t *handle, size_t suggested_size,
                      uv_buf_t *buf) {
+  printf("handle is a %s\n", uv_handle_type_name(handle->type));
   buf->base = (char *)mem_malloc(suggested_size, "on_alloc_buffer", 2);
+  if (!buf->base) {
+    fprintf(stderr, "Memory allocation error\n");
+    return;
+  }
   buf->len = suggested_size;
   if (buf->base) {
     memset(buf->base, 0, suggested_size);  // Zero out the buffer
   }
 }
 
+// uv_read_cb
 void on_read(uv_stream_t *client_stream, ssize_t nread, const uv_buf_t *buf) {
   if (nread > 0) {
     // looks like I need a new allocation here to handle multiple chunks
@@ -53,11 +60,12 @@ void on_read(uv_stream_t *client_stream, ssize_t nread, const uv_buf_t *buf) {
   }
 }
 
-int validate_tcp_ip(const uv_tcp_t *client) {
+int validate_tcp_ip(const uv_tcp_t *client_stream) {
   struct sockaddr_storage peername;
   int namelen = sizeof(peername);
 
-  if (uv_tcp_getpeername(client, (struct sockaddr *)&peername, &namelen) == 0) {
+  if (uv_tcp_getpeername(client_stream, (struct sockaddr *)&peername,
+                         &namelen) == 0) {
     char ip[17] = {'\0'};
     if (peername.ss_family == AF_INET) {
       uv_ip4_name((struct sockaddr_in *)&peername, ip, 16);
@@ -101,7 +109,7 @@ void on_connection(uv_stream_t *server_stream, int status) {
   }
 }
 
-uv_tcp_t server;
+uv_tcp_t server_stream;
 uv_signal_t sigint;
 
 volatile sig_atomic_t stop_server = 0;
@@ -115,20 +123,20 @@ void handle_sigint(uv_signal_t *handle, int signum) {
   } else {
     printf("\nSIGINT received: %d\n", signum);
   }
-  uv_signal_stop(handle);             // Stop receiving further SIGINT signals
-  uv_tcp_close_reset(&server, NULL);  // Close the server
-  uv_stop(loop);                      // Stop the event loop
+  uv_signal_stop(handle);  // Stop receiving further SIGINT signals
+  uv_tcp_close_reset(&server_stream, NULL);  // Close the server
+  uv_stop(loop);                             // Stop the event loop
 }
 
 int start_server_event_loop_http(int port) {
   uv_loop_t *loop = uv_default_loop();
-  uv_tcp_init(loop, &server);
+  uv_tcp_init(loop, &server_stream);
 
   struct sockaddr_in bind_addr;
   uv_ip4_addr("127.0.0.1", port, &bind_addr);
-  uv_tcp_bind(&server, (const struct sockaddr *)&bind_addr, 0);
+  uv_tcp_bind(&server_stream, (const struct sockaddr *)&bind_addr, 0);
 
-  int r = uv_listen((uv_stream_t *)&server, SOMAXCONN, on_connection);
+  int r = uv_listen((uv_stream_t *)&server_stream, SOMAXCONN, on_connection);
   if (r) {
     fprintf(stderr, "\nListen error %s\n", uv_strerror(r));
     return 1;

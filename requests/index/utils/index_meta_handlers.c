@@ -102,7 +102,7 @@ const JSON_Value_With_Removed_Items* removed_meta(
       http_response->status = 400;
       s_compile(&http_response->body,
                 "Request body array must contain only strings, failed to parse "
-                "string from array. %d",
+                "string from array. %zu",
                 i);
       goto cleanup;
     }
@@ -115,7 +115,7 @@ const JSON_Value_With_Removed_Items* removed_meta(
         s_compile(
             &http_response->body,
             "Existing meta data array must contain only strings, failed to "
-            "parse string from array. %d",
+            "parse string from array. %zu",
             j);
         goto cleanup;
       }

@@ -49,8 +49,7 @@ int load_settings_from_file() {
   sdb_stater_t* stater_load =
       mem_calloc(1, sizeof(sdb_stater_t), "settings_str", 1);
   stater_load->error_body = "Failed to settings file";
-  if (!fs_file_load(NULL, &settings_str, settings_file_path,
-                         stater_load)) {
+  if (!fs_file_load(NULL, &settings_str, settings_file_path, stater_load)) {
     return 1;
   }
 
@@ -128,44 +127,54 @@ int intialize_default_settings() {
   global_setting_port = DEFAULT_PORT;
 
   int auth_length = strlen(DEFAULT_AUTH);
-  global_setting_auth_ptr = (char*)malloc(auth_length);
+  global_setting_auth_ptr = (char*)malloc(auth_length + 1);
+  global_setting_auth_ptr[auth_length] = '\0';
   strncpy(global_setting_auth_ptr, DEFAULT_AUTH, auth_length);
 
   int ip_length = strlen(DEFAULT_IP);
-  global_setting_ip_ptr = (char*)malloc(ip_length);
+  global_setting_ip_ptr = (char*)malloc(ip_length + 1);
+  global_setting_ip_ptr[ip_length] = '\0';
   strncpy(global_setting_ip_ptr, DEFAULT_IP, ip_length);
 
   int path_for_data_length = strlen(DEFAULT_PATH_DATA);
-  global_setting_path_for_data_ptr = (char*)malloc(path_for_data_length);
+  global_setting_path_for_data_ptr = (char*)malloc(path_for_data_length + 1);
+  global_setting_path_for_data_ptr[path_for_data_length] = '\0';
   strncpy(global_setting_path_for_data_ptr, DEFAULT_PATH_DATA,
           path_for_data_length);
 
   int path_for_crt_length = strlen(DEFAULT_PATH_CRT);
-  global_setting_path_for_crt_ptr = (char*)malloc(path_for_crt_length);
+  global_setting_path_for_crt_ptr = (char*)malloc(path_for_crt_length + 1);
+  global_setting_path_for_crt_ptr[path_for_crt_length] = '\0';
   strncpy(global_setting_path_for_crt_ptr, DEFAULT_PATH_CRT,
           path_for_crt_length);
 
   int path_for_key_length = strlen(DEFAULT_PATH_KEY);
-  global_setting_path_for_key_ptr = (char*)malloc(path_for_key_length);
+  global_setting_path_for_key_ptr = (char*)malloc(path_for_key_length + 1);
+  global_setting_path_for_key_ptr[path_for_key_length] = '\0';
   strncpy(global_setting_path_for_key_ptr, DEFAULT_PATH_KEY,
           path_for_key_length);
 
   int server_algorithm_length = strlen(DEFAULT_SERVER_ALGORITHM);
-  global_setting_server_algorithm_ptr = (char*)malloc(server_algorithm_length);
+  global_setting_server_algorithm_ptr =
+      (char*)malloc(server_algorithm_length + 1);
+  global_setting_server_algorithm_ptr[server_algorithm_length] = '\0';
   strncpy(global_setting_server_algorithm_ptr, DEFAULT_SERVER_ALGORITHM,
           server_algorithm_length);
 
   int server_protocol_length = strlen(DEFAULT_SERVER_PROTOCOL);
-  global_setting_server_protocol_ptr = (char*)malloc(server_protocol_length);
+  global_setting_server_protocol_ptr =
+      (char*)malloc(server_protocol_length + 1);
+  global_setting_server_protocol_ptr[server_protocol_length] = '\0';
   strncpy(global_setting_path_for_key_ptr, DEFAULT_SERVER_PROTOCOL,
           server_protocol_length);
 
+  // waste of memory, but premature optimization is the root of all evil. <- LOL
   char default_settings_str[1024];
   snprintf(default_settings_str, sizeof(default_settings_str),
            "{\n  \"port\": %d,\n  \"auth\": \"%s\",\n  \"ip\": \"%s\",\n  "
            "\"path_for_data\": \"%s\"\n  \"path_for_crt\": \"%s\"\n  "
            "\"path_for_key\": \"%s\"\n  \"server_algorithm\": \"%s\"\n  "
-           "\"server_protocol\": \"%s\"\n}",
+           "\"server_protocol\": \"%s\"\n}\0",
            DEFAULT_PORT, DEFAULT_AUTH, DEFAULT_IP, DEFAULT_PATH_DATA,
            DEFAULT_PATH_CRT, DEFAULT_PATH_KEY, DEFAULT_SERVER_ALGORITHM,
            DEFAULT_SERVER_PROTOCOL);

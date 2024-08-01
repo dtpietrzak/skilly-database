@@ -49,7 +49,7 @@ int load_settings_from_file() {
   sdb_stater_t* stater_load =
       mem_calloc(1, sizeof(sdb_stater_t), "settings_str", 1);
   stater_load->error_body = "Failed to settings file";
-  if (!fs_file_load(NULL, &settings_str, settings_file_path, stater_load)) {
+  if (!fs_file_load(NULL, stater_load, &settings_str, settings_file_path)) {
     return 1;
   }
 
@@ -202,7 +202,7 @@ int intialize_default_settings() {
 // This sets global_settings based on settings.conf content or default
 // settings
 int load_settings() {
-  bool file_exists = fs_file_access(NULL, settings_file_path, NULL, F_OK);
+  bool file_exists = fs_file_access(NULL, NULL, settings_file_path, F_OK);
 
   if (file_exists) {
     int load_settings_status = load_settings_from_file();

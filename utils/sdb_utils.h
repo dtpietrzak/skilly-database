@@ -6,10 +6,11 @@
 
 // fs
 #include "./fs/access.h"
+#include "./fs/path.h"
 #include "./fs/dir_operations.h"
 #include "./fs/file_operations.h"
 #include "./fs/load.h"
-// #include "./fs/save.h"
+#include "./fs/save.h"
 
 // http
 #include "./http/http.h"

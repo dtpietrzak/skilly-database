@@ -9,8 +9,8 @@
 
 #include "../request_state/request_state.h"
 
-bool fs_file_load(sdb_http_response_t* http_response, char** out_buffer,
-                       const char* file_path, sdb_stater_t* stater);
+bool fs_file_load(sdb_http_response_t* http_response, sdb_stater_t* stater,
+                  char** out_buffer, const char* file_path);
 
 // if / when the time comes, add this function to allow a single file open
 // for subsequent reads / writes.

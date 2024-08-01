@@ -32,7 +32,7 @@ settings.json
 
 ## Routes
 
-### POST /schema?db=desserts
+### POST /schema?col=desserts
 
 You create a database by defining a schema.
 
@@ -51,7 +51,7 @@ request body:
 }
 ```
 
-### POST /upsert?db=desserts&id=cake
+### POST /upsert?col=desserts&id=cake
 
 You upsert some stuff into that database, the whole document at a time.
 
@@ -70,7 +70,7 @@ request body:
 }
 ```
 
-### POST /upsert?db=desserts&id=cake.colors
+### POST /upsert?col=desserts&id=cake.colors
 
 Or upserting an update via JSON data's dot notation.
 
@@ -80,7 +80,7 @@ request body:
 ["red", "white", "blue"]
 ```
 
-### POST /upsert?db=desserts&id=cake.size.width
+### POST /upsert?col=desserts&id=cake.size.width
 
 Dot notation works as expected ad infinitum.
 
@@ -90,7 +90,7 @@ request body:
 100
 ```
 
-### GET /doc?db=desserts&id=cake
+### GET /doc?col=desserts&id=cake
 
 You can get that whole doc directly by it's id.
 
@@ -108,7 +108,7 @@ response body:
 }
 ```
 
-### GET /doc?db=desserts&id=cake.colors
+### GET /doc?col=desserts&id=cake.colors
 
 Or by dot notation.
 
@@ -118,7 +118,7 @@ response body:
 ["red", "white", "blue"]
 ```
 
-### GET /doc?db=desserts&id=cake.size.width
+### GET /doc?col=desserts&id=cake.size.width
 
 Dot notation ad infinitum.
 

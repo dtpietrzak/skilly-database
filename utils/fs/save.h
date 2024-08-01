@@ -9,7 +9,7 @@
 
 #include "../request_state/request_state.h"
 
-bool fs_file_save(sdb_http_response_t* http_response, char* buffer_to_save,
-                  const char* file_path, sdb_stater_t* stater);
+bool fs_file_save(sdb_http_response_t* http_response, sdb_stater_t* stater,
+                  char* buffer_to_save, const char* file_path);
 
 #endif  // FS_SAVE_H

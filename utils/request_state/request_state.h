@@ -61,6 +61,9 @@ void free_http_request(sdb_http_request_t* http_request);
 void free_http_response(sdb_http_response_t* http_response);
 void free_stater(sdb_stater_t* stater);
 
+void apply_state(sdb_http_response_t* http_response, sdb_stater_t* stater,
+                 char* format_string, ...);
+
 void debug_request_string(const char* request_str);
 void debug_response_string(const char* respoonse_str);
 

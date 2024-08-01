@@ -14,7 +14,7 @@ int handle_request_find(sdb_http_request_t* http_request,
     return 1;
   }
 
-  char* index_path =
+  const char* index_path =
       derive_path(4, "index", queries.db, queries.key, queries.value);
 
   // if db_path is an error message
@@ -28,8 +28,7 @@ int handle_request_find(sdb_http_request_t* http_request,
   sdb_stater_t* stater_doc_exists = calloc(1, sizeof(sdb_stater_t));
   stater_doc_exists->error_body = "Requested index document does not exist";
   stater_doc_exists->error_status = 404;
-  if (!fs_file_access(http_response, index_path, stater_doc_exists,
-                           F_OK)) {
+  if (!fs_file_access(http_response, stater_doc_exists, index_path, F_OK)) {
     return 1;
   }
 
@@ -38,8 +37,7 @@ int handle_request_find(sdb_http_request_t* http_request,
   stater_read_access->error_body =
       "Requested index document does not have read permissions";
   stater_read_access->error_status = 500;
-  if (!fs_file_access(http_response, index_path, stater_read_access,
-                           R_OK)) {
+  if (!fs_file_access(http_response, stater_read_access, index_path, R_OK)) {
     return 1;
   }
 
@@ -48,8 +46,7 @@ int handle_request_find(sdb_http_request_t* http_request,
   sdb_stater_t* stater_load = calloc(1, sizeof(sdb_stater_t));
   stater_load->error_body = "Failed to load index document";
   stater_load->error_status = 500;
-  if (!fs_file_load(http_response, &file_content, index_path,
-                         stater_load)) {
+  if (!fs_file_load(http_response, stater_load, &file_content, index_path)) {
     return 1;
   }
 

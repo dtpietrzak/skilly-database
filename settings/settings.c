@@ -174,7 +174,7 @@ int intialize_default_settings() {
            "{\n  \"port\": %d,\n  \"auth\": \"%s\",\n  \"ip\": \"%s\",\n  "
            "\"path_for_data\": \"%s\"\n  \"path_for_crt\": \"%s\"\n  "
            "\"path_for_key\": \"%s\"\n  \"server_algorithm\": \"%s\"\n  "
-           "\"server_protocol\": \"%s\"\n}\0",
+           "\"server_protocol\": \"%s\"\n}",
            DEFAULT_PORT, DEFAULT_AUTH, DEFAULT_IP, DEFAULT_PATH_DATA,
            DEFAULT_PATH_CRT, DEFAULT_PATH_KEY, DEFAULT_SERVER_ALGORITHM,
            DEFAULT_SERVER_PROTOCOL);

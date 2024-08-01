@@ -2,10 +2,14 @@
 
 #include "../global.c"
 
+uv_tcp_t server_stream;
+uv_signal_t sigint;
+
+volatile sig_atomic_t stop_server = 0;
+
 // uv_alloc_cb
 void on_alloc_buffer(uv_handle_t *handle, size_t suggested_size,
                      uv_buf_t *buf) {
-  printf("handle is a %s\n", uv_handle_type_name(handle->type));
   buf->base = (char *)mem_malloc(suggested_size, "on_alloc_buffer", 2);
   if (!buf->base) {
     fprintf(stderr, "Memory allocation error\n");
@@ -108,11 +112,6 @@ void on_connection(uv_stream_t *server_stream, int status) {
     mem_free(client_stream, "client_tcp_buffer", 2);
   }
 }
-
-uv_tcp_t server_stream;
-uv_signal_t sigint;
-
-volatile sig_atomic_t stop_server = 0;
 
 // Signal handler function
 void handle_sigint(uv_signal_t *handle, int signum) {

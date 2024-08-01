@@ -1,4 +1,4 @@
-# _database
+# skilly-database
 
 A super simple document database of JSON documents
 

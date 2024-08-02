@@ -20,18 +20,27 @@ int handle_request_upsert(sdb_http_request_t* http_request,
     return 1;
   }
 
-  char* db_path = derive_path(3, "collection", queries.col, queries.id);
-  if (db_path == NULL) {
-    http_response->status = 400;
-    s_set(&http_response->body, "Failed to derive col path");
+  sdb_stater_t* stater = calloc(1, sizeof(sdb_stater_t));
+
+  char* db_path = NULL;
+  stater->error_body = "Failed to derive collection path";
+  stater->error_status = 500;
+  if (!fs_path(http_response, stater, &db_path, 3, "collection", queries.col,
+               queries.id)) {
+    free_stater(stater);
     return 1;
   }
-  char* schema_path = derive_path(2, "schema", queries.col);
-  if (schema_path == NULL) {
-    http_response->status = 400;
-    s_set(&http_response->body, "Failed to derive schema path");
+
+  char* schema_path = NULL;
+  stater->error_body = "Failed to derive schema path";
+  stater->error_status = 500;
+  if (!fs_path(http_response, stater, &schema_path, 3, "collection",
+               queries.col, queries.id)) {
+    free_stater(stater);
     return 1;
   }
+
+  free_stater(stater);
 
   JSON_Value* request_body_json_value =
       get_json_value(http_response, http_request->body.value,

@@ -13,27 +13,29 @@ int handle_request_index_upsert(sdb_http_request_t* http_request,
     return 1;
   }
 
+  sdb_stater_t* stater = calloc(1, sizeof(sdb_stater_t));
+
   char* index_meta_path = NULL;
-  sdb_stater_t* stater_index_meta_path = calloc(1, sizeof(sdb_stater_t));
-  stater_index_meta_path->error_body = "Failed to derive index _meta path";
-  stater_index_meta_path->error_status = 500;
-  if (!fs_path(http_response, stater_index_meta_path, &index_meta_path, 3,
-               "index", queries.col, "_meta")) {
+  stater->error_body = "Failed to derive index _meta path";
+  stater->error_status = 500;
+  if (!fs_path(http_response, stater, &index_meta_path, 3, "index", queries.col,
+               "_meta")) {
+    free_stater(stater);
     return 1;
   }
 
   JSON_Array_With_Count request_array_with_count;
   if (get_json_array_with_count(http_response, http_request->body.value,
                                 &request_array_with_count, "request") != 0) {
+    free_stater(stater);
     return 1;
   }
 
   char* schema_path = NULL;
-  sdb_stater_t* stater_schema_path = calloc(1, sizeof(sdb_stater_t));
-  stater_schema_path->error_body = "Failed to derive index _meta path";
-  stater_schema_path->error_status = 500;
-  if (!fs_path(http_response, stater_schema_path, &schema_path, 2, "schema",
-               queries.col)) {
+  stater->error_body = "Failed to derive index _meta path";
+  stater->error_status = 500;
+  if (!fs_path(http_response, stater, &schema_path, 2, "schema", queries.col)) {
+    free_stater(stater);
     return 1;
   }
 
@@ -46,6 +48,7 @@ int handle_request_index_upsert(sdb_http_request_t* http_request,
   if (schema_object == NULL) {
     http_response->status = 500;
     s_set(&http_response->body, "Failed to get schema object");
+    free_stater(stater);
     return 1;
   }
 
@@ -57,6 +60,7 @@ int handle_request_index_upsert(sdb_http_request_t* http_request,
       s_set(&http_response->body,
             "Request body array must contain only strings, failed to parse "
             "string from array.");
+      free_stater(stater);
       return 1;
     }
 
@@ -65,6 +69,7 @@ int handle_request_index_upsert(sdb_http_request_t* http_request,
       s_set(&http_response->body,
             "Request body array must contain only database document keys that "
             "are present in the schema.");
+      free_stater(stater);
       return 1;
     }
   }
@@ -78,13 +83,14 @@ int handle_request_index_upsert(sdb_http_request_t* http_request,
   // now actually index the new files
   // get a list of all the files in the db_path directory
   char* db_path = NULL;
-  sdb_stater_t* stater_db_path = calloc(1, sizeof(sdb_stater_t));
-  stater_db_path->error_body = "Failed to derive index _meta path";
-  stater_db_path->error_status = 500;
-  if (!fs_path(http_response, stater_db_path, &db_path, 2, "collection",
-               queries.col)) {
+  stater->error_body = "Failed to derive index _meta path";
+  stater->error_status = 500;
+  if (!fs_path(http_response, stater, &db_path, 2, "collection", queries.col)) {
+    free_stater(stater);
     return 1;
   }
+
+  free_stater(stater);
 
   int file_count;
   char** filenames = get_filenames(db_path, &file_count);
@@ -113,7 +119,7 @@ int handle_request_index_upsert(sdb_http_request_t* http_request,
   }
 
   // convert the updated json array to a string
-  char* updated_json = json_serialize_to_string(updated_json_value);
+  const char* updated_json = json_serialize_to_string(updated_json_value);
   if (updated_json == NULL) {
     http_response->status = 500;
     s_set(&http_response->body, "Failed to serialize updated JSON data");

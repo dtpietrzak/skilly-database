@@ -14,39 +14,42 @@ int handle_request_doc(sdb_http_request_t* http_request,
     return 1;
   }
 
+  sdb_stater_t* stater = calloc(1, sizeof(sdb_stater_t));
+
   char* db_path = NULL;
-  sdb_stater_t* stater_db_path = calloc(1, sizeof(sdb_stater_t));
-  stater_db_path->error_body = "Failed to derive path";
-  stater_db_path->error_status = 500;
-  if (!fs_path(http_response, stater_db_path, &db_path, 3, "collection",
-               queries.col, queries.id)) {
+  stater->error_body = "Failed to derive path";
+  stater->error_status = 500;
+  if (!fs_path(http_response, stater, &db_path, 3, "collection", queries.col,
+               queries.id)) {
+    free_stater(stater);
     return 1;
   }
 
   // Check if the file exists
-  sdb_stater_t* stater_doc_exists = calloc(1, sizeof(sdb_stater_t));
-  stater_doc_exists->error_body = "Requested document does not exist";
-  stater_doc_exists->error_status = 404;
-  if (!fs_file_access(http_response, stater_doc_exists, db_path, F_OK)) {
+  stater->error_body = "Requested document does not exist";
+  stater->error_status = 404;
+  if (!fs_file_access(http_response, stater, db_path, F_OK)) {
+    free_stater(stater);
     return 1;
   }
 
   // Check if the file is readable
-  sdb_stater_t* stater_read_access = calloc(1, sizeof(sdb_stater_t));
-  stater_read_access->error_body =
-      "Requested document does not have read permissions";
-  stater_read_access->error_status = 500;
-  if (!fs_file_access(http_response, stater_read_access, db_path, R_OK)) {
+  stater->error_body = "Requested document does not have read permissions";
+  stater->error_status = 500;
+  if (!fs_file_access(http_response, stater, db_path, R_OK)) {
+    free_stater(stater);
     return 1;
   }
 
   char* file_content = NULL;
-  sdb_stater_t* stater_load = calloc(1, sizeof(sdb_stater_t));
-  stater_load->error_body = "Failed to load document";
-  stater_load->error_status = 500;
-  if (!fs_file_load(http_response, stater_load, &file_content, db_path)) {
+  stater->error_body = "Failed to load document";
+  stater->error_status = 500;
+  if (!fs_file_load(http_response, stater, &file_content, db_path)) {
+    free_stater(stater);
     return 1;
   }
+
+  free_stater(stater);
 
   if (contains_periods(queries.id)) {
     // remove the part before the first dot and the first dot itself

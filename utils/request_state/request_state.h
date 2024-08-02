@@ -39,9 +39,9 @@ typedef struct {
 } sdb_http_response_t;
 
 typedef struct {
-  char* success_body;
+  const char* success_body;
   int success_status;
-  char* error_body;
+  const char* error_body;
   int error_status;
 } sdb_stater_t;
 

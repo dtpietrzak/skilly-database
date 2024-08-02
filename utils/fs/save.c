@@ -32,7 +32,6 @@ bool fs_file_save(sdb_http_response_t* http_response, sdb_stater_t* stater,
   }
 
   // cleanup
-  free_stater(stater);
   uv_fs_close(loop, &open_req, fd, NULL);
   uv_fs_req_cleanup(&open_req);
   uv_fs_req_cleanup(&write_req);

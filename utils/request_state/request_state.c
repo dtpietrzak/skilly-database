@@ -15,62 +15,47 @@ void free_http_response(sdb_http_response_t *http_response) {
 
 void free_stater(sdb_stater_t *stater) {
   if (stater != NULL) {
-    stater->success_body = NULL;
-    stater->error_body = NULL;
-    stater->success_status = 0;
-    stater->error_status = 0;
     free(stater);
   }
 }
 
-void apply_state(sdb_http_response_t *http_response, sdb_stater_t *stater,
+void apply_state(sdb_http_response_t *http_response, const sdb_stater_t *stater,
                  char *format_string, ...) {
+  char buffer[1024];
+  va_list args;
+  va_start(args, format_string);
+  vsnprintf(buffer, sizeof(buffer), format_string, args);
+  va_end(args);
+
   if (http_response != NULL) {  // attaching to the http_response struct
     if (stater->error_status != 0) {
       http_response->status = stater->error_status;
     }
     if (stater->error_body != NULL) {
-      va_list args;
-      va_start(args, format_string);
-      s_compile(&http_response->body, format_string, args);
-      s_prepend(&http_response->body, stater->error_body);
-      va_end(args);
+      s_set(&http_response->body, stater->error_body);
+      s_append(&http_response->body, buffer);
     }
     if (stater->success_status != 0) {
       http_response->status = stater->success_status;
     }
     if (stater->success_body != NULL) {
-      va_list args;
-      va_start(args, format_string);
-      s_compile(&http_response->body, format_string, args);
-      s_prepend(&http_response->body, stater->error_body);
-      va_end(args);
+      s_set(&http_response->body, stater->error_body);
+      s_append(&http_response->body, buffer);
     }
   } else {  // printing to the console
     if (stater->error_status != 0) {
       printf("Error: %d\n", stater->error_status);
     }
     if (stater->error_body != NULL) {
-      va_list args;
-      va_start(args, format_string);
-      printf("%s", stater->error_body);
-      printf(format_string, args);
-      printf("\n");
-      va_end(args);
+      printf("%s%s\n", stater->error_body, buffer);
     }
     if (stater->success_status != 0) {
       printf("Success: %d\n", stater->success_status);
     }
     if (stater->success_body != NULL) {
-      va_list args;
-      va_start(args, format_string);
-      printf("%s", stater->success_body);
-      printf(format_string, args);
-      printf("\n");
-      va_end(args);
+      printf("%s%s\n", stater->success_body, buffer);
     }
   }
-  free_stater(stater);
 }
 
 void debug_request_string(const char *request_str) {

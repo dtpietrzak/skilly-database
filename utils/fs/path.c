@@ -67,7 +67,6 @@ bool fs_path(sdb_http_response_t* http_response, sdb_stater_t* stater,
     }
   }
 
-  free_stater(stater);
   *path_ptr = relative_path;
   return true;
 }

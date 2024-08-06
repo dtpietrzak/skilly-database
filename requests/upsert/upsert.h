@@ -1,13 +1,15 @@
 #include <errno.h>
+#include <sdb_utils.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sdb_utils.h>
 
-#include "upsert_utils.h"
+#include "../_utils/fs/load.h"
+#include "../_utils/json/validate.h"
+#include "../_utils/path/get.h"
 #include "compile_dot_notation.h"
-#include "compile_entire_doc.h"
+#include "upsert_utils.h"
 
 #ifdef _WIN32
 #include <direct.h>  // For Windows mkdir

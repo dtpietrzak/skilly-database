@@ -8,6 +8,9 @@
 bool load_document(sdb_http_response_t* http_response, sdb_stater_t* stater,
                    char** out_buffer, const char* col_name, const char* id);
 
+bool load_schema(sdb_http_response_t* http_response, sdb_stater_t* stater,
+                 char** out_buffer, const char* col_name);
+
 bool load_index_value(sdb_http_response_t* http_response, sdb_stater_t* stater,
                       char** out_buffer, const char* col_name,
                       const char* document_key, const char* document_value);

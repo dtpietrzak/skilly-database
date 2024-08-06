@@ -14,11 +14,9 @@ int handle_request_delete(sdb_http_request_t* http_request,
 
   sdb_stater_t* stater = calloc(1, sizeof(sdb_stater_t));
 
-  char* col_path = NULL;
-  stater->error_body = "Failed to derive path";
-  stater->error_status = 500;
-  if (!fs_path(http_response, stater, &col_path, 3, "collection", queries.col,
-               queries.id)) {
+  char* document_path = NULL;
+  if (!get_path_document(http_response, stater, &document_path, queries.col,
+                         queries.id)) {
     free_stater(stater);
     return 1;
   }
@@ -26,21 +24,26 @@ int handle_request_delete(sdb_http_request_t* http_request,
   // Check if the file exists
   stater->error_body = "Requested document does not exist";
   stater->error_status = 404;
-  if (!fs_file_access(http_response, stater, col_path, F_OK)) {
+  if (!fs_file_access(http_response, stater, document_path, F_OK)) {
+    free(document_path);
     free_stater(stater);
     return 1;
   }
 
-  // Try to delete the file
-  if (remove(col_path) == 0) {
-    http_response->status = 200;
-    s_compile(&http_response->body, "\"Removed %s successfully\"", col_path);
-    free_stater(stater);
-    return 0;
-  } else {
-    http_response->status = 500;
-    s_compile(&http_response->body, "Failed to remove %s", col_path);
+  if (!fs_file_remove(http_response, stater, document_path)) {
+    free(document_path);
     free_stater(stater);
     return 1;
   }
+
+  // TODO
+  // we need to remove all references to the document from the index system
+
+  free(document_path);
+  free_stater(stater);
+
+  http_response->status = 200;
+  s_set(&http_response->body, "Document removed successfully");
+
+  return 0;
 }

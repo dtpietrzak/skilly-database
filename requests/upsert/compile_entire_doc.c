@@ -1,7 +1,7 @@
 #include "compile_entire_doc.h"
 
 int compile_doc_change(sdb_http_response_t* http_response, sdb_http_request_t* http_request,
-                       char* db_path, sdb_query_params_t queries,
+                       char* col_path, sdb_query_params_t queries,
                        char* schema_file_content,
                        const JSON_Value* request_json_value) {
   JSON_Value* schema_json =

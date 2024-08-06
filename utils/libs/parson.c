@@ -157,7 +157,7 @@ struct json_array_t {
 };
 
 /* Various */
-static char *read_file(const char *filename);
+static char *read_file(const char *file_name);
 static void remove_comments(char *string, const char *start_token,
                             const char *end_token);
 static char *parson_strndup(const char *string, size_t n);
@@ -225,8 +225,8 @@ static int json_serialize_to_buffer_r(const JSON_Value *value, char *buf,
 static int json_serialize_string(const char *string, size_t len, char *buf);
 
 /* Various */
-static char *read_file(const char *filename) {
-  FILE *fp = fopen(filename, "r");
+static char *read_file(const char *file_name) {
+  FILE *fp = fopen(file_name, "r");
   size_t size_to_read = 0;
   size_t size_read = 0;
   long pos;
@@ -1503,8 +1503,8 @@ static int json_serialize_string(const char *string, size_t len, char *buf) {
 #undef APPEND_INDENT
 
 /* Parser API */
-JSON_Value *json_parse_file(const char *filename) {
-  char *file_contents = read_file(filename);
+JSON_Value *json_parse_file(const char *file_name) {
+  char *file_contents = read_file(file_name);
   JSON_Value *output_value = NULL;
   if (file_contents == NULL) {
     return NULL;
@@ -1514,8 +1514,8 @@ JSON_Value *json_parse_file(const char *filename) {
   return output_value;
 }
 
-JSON_Value *json_parse_file_with_comments(const char *filename) {
-  char *file_contents = read_file(filename);
+JSON_Value *json_parse_file_with_comments(const char *file_name) {
+  char *file_contents = read_file(file_name);
   JSON_Value *output_value = NULL;
   if (file_contents == NULL) {
     return NULL;
@@ -1976,14 +1976,14 @@ JSON_Status json_serialize_to_buffer(const JSON_Value *value, char *buf,
 }
 
 JSON_Status json_serialize_to_file(const JSON_Value *value,
-                                   const char *filename) {
+                                   const char *file_name) {
   JSON_Status return_code = JSONSuccess;
   FILE *fp = NULL;
   char *serialized_string = json_serialize_to_string(value);
   if (serialized_string == NULL) {
     return JSONFailure;
   }
-  fp = fopen(filename, "w");
+  fp = fopen(file_name, "w");
   if (fp == NULL) {
     json_free_serialized_string(serialized_string);
     return JSONFailure;
@@ -2040,14 +2040,14 @@ JSON_Status json_serialize_to_buffer_pretty(const JSON_Value *value, char *buf,
 }
 
 JSON_Status json_serialize_to_file_pretty(const JSON_Value *value,
-                                          const char *filename) {
+                                          const char *file_name) {
   JSON_Status return_code = JSONSuccess;
   FILE *fp = NULL;
   char *serialized_string = json_serialize_to_string_pretty(value);
   if (serialized_string == NULL) {
     return JSONFailure;
   }
-  fp = fopen(filename, "w");
+  fp = fopen(file_name, "w");
   if (fp == NULL) {
     json_free_serialized_string(serialized_string);
     return JSONFailure;

@@ -81,11 +81,11 @@ int handle_request_index_upsert(sdb_http_request_t* http_request,
       upserted_meta(http_response, request_array_with_count, existing_meta);
 
   // now actually index the new files
-  // get a list of all the files in the db_path directory
-  char* db_path = NULL;
+  // get a list of all the files in the col_path directory
+  char* col_path = NULL;
   stater->error_body = "Failed to derive index _meta path";
   stater->error_status = 500;
-  if (!fs_path(http_response, stater, &db_path, 2, "collection", queries.col)) {
+  if (!fs_path(http_response, stater, &col_path, 2, "collection", queries.col)) {
     free_stater(stater);
     return 1;
   }
@@ -93,7 +93,7 @@ int handle_request_index_upsert(sdb_http_request_t* http_request,
   free_stater(stater);
 
   int file_count;
-  char** filenames = get_filenames(db_path, &file_count);
+  char** filenames = get_filenames(col_path, &file_count);
 
   if (filenames != NULL) {
     for (size_t i = 0; i < request_array_with_count.count; i++) {

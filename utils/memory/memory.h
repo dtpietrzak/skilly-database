@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define DEBUG true
+#define DEBUG false
 #define DEBUG_LAYER 1
 // debug layers
 // 1 - main / settings

@@ -20,7 +20,7 @@ int handle_request_schema(sdb_http_request_t* http_request,
     return 1;
   }
 
-  // char* db_path = derive_path("collection", queries.col, queries.id);
+  // char* col_path = derive_path("collection", queries.col, queries.id);
   char* schema_path = derive_path(2, "schema", queries.col);
 
   JSON_Value* json_value =

@@ -1,7 +1,7 @@
 #include "compile_dot_notation.h"
 
 int compile_dot_notation_change(sdb_http_response_t* http_response,
-                                sdb_http_request_t* http_request, char* db_path,
+                                sdb_http_request_t* http_request, char* col_path,
                                 sdb_query_params_t queries,
                                 char* schema_file_content,
                                 JSON_Value* request_json_value) {
@@ -9,7 +9,7 @@ int compile_dot_notation_change(sdb_http_response_t* http_response,
   sdb_stater_t* stater_doc_exists = calloc(1, sizeof(sdb_stater_t));
   stater_doc_exists->error_body = "Document does not exist";
   stater_doc_exists->error_status = 404;
-  if (!fs_file_access(http_response, stater_doc_exists, db_path, F_OK)) {
+  if (!fs_file_access(http_response, stater_doc_exists, col_path, F_OK)) {
     return 1;
   }
 
@@ -17,7 +17,7 @@ int compile_dot_notation_change(sdb_http_response_t* http_response,
   sdb_stater_t* stater_read_access = calloc(1, sizeof(sdb_stater_t));
   stater_read_access->error_body = "Document does not have read permissions";
   stater_read_access->error_status = 500;
-  if (!fs_file_access(http_response, stater_read_access, db_path, R_OK)) {
+  if (!fs_file_access(http_response, stater_read_access, col_path, R_OK)) {
     return 1;
   }
 
@@ -53,13 +53,13 @@ int compile_dot_notation_change(sdb_http_response_t* http_response,
   }
 
   // Read file content into string
-  char* current_document_file_content = read_file_to_string(db_path);
+  char* current_document_file_content = read_file_to_string(col_path);
   if (current_document_file_content == NULL) {
     // 500 here even in the case of the file not existing
     // because we're checking that above
     http_response->status = 500;
     s_compile(&http_response->body,
-              "Failed to read data from the requested document: %s", db_path);
+              "Failed to read data from the requested document: %s", col_path);
     return 1;
   }
 

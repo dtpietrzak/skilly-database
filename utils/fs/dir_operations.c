@@ -36,7 +36,7 @@ char** get_filenames(const char* dir_path, int* count) {
       }
     }
 
-    // Allocate memory for the filename and copy it
+    // Allocate memory for the file_name and copy it
     filenames[*count] = malloc(strlen(entry->d_name) + 1);
     strcpy(filenames[*count], entry->d_name);
     (*count)++;

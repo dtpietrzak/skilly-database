@@ -50,9 +50,9 @@ const char* get_document_dot_value_as_string(sdb_http_response_t* http_response,
   return document_dot_value;
 }
 
-int index_a_doc(sdb_http_response_t* http_response, const char* db_name,
-                const char* filename, const char* request_meta_string) {
-  const char* file_path = derive_path(3, "collection", db_name, filename);
+int index_a_doc(sdb_http_response_t* http_response, const char* col_name,
+                const char* file_name, const char* request_meta_string) {
+  const char* file_path = derive_path(3, "collection", col_name, file_name);
   if (file_path == NULL) {
     http_response->status = 500;
     s_set(&http_response->body,
@@ -69,7 +69,7 @@ int index_a_doc(sdb_http_response_t* http_response, const char* db_name,
 
   // store that document's "id" in a file named "value"
   // in the directory named "key" in that dbs index directory
-  const char* index_path = derive_path(4, "index", db_name, request_meta_string,
+  const char* index_path = derive_path(4, "index", col_name, request_meta_string,
                                        document_dot_value_as_string);
   if (index_path == NULL) {
     http_response->status = 500;
@@ -99,7 +99,7 @@ int index_a_doc(sdb_http_response_t* http_response, const char* db_name,
         return 1;
       }
       JSON_Status append_status =
-          json_array_append_string(index_json_array, filename);
+          json_array_append_string(index_json_array, file_name);
       if (append_status != JSONSuccess) {
         http_response->status = 500;
         s_set(&http_response->body, "Failed to append new item to index data");
@@ -141,7 +141,7 @@ int index_a_doc(sdb_http_response_t* http_response, const char* db_name,
   int already_indexed = 0;
   for (size_t k = 0; k < json_array_get_count(index_json_array); k++) {
     const char* indexed_filename = json_array_get_string(index_json_array, k);
-    if (strcmp(indexed_filename, filename) == 0) {
+    if (strcmp(indexed_filename, file_name) == 0) {
       already_indexed = 1;
       break;
     }
@@ -152,7 +152,7 @@ int index_a_doc(sdb_http_response_t* http_response, const char* db_name,
   }
 
   JSON_Status append_status =
-      json_array_append_string(index_json_array, filename);
+      json_array_append_string(index_json_array, file_name);
   if (append_status != JSONSuccess) {
     http_response->status = 500;
     s_set(&http_response->body, "Failed to append new item to index data");

@@ -14,10 +14,10 @@ int handle_request_delete(sdb_http_request_t* http_request,
 
   sdb_stater_t* stater = calloc(1, sizeof(sdb_stater_t));
 
-  char* db_path = NULL;
+  char* col_path = NULL;
   stater->error_body = "Failed to derive path";
   stater->error_status = 500;
-  if (!fs_path(http_response, stater, &db_path, 3, "collection", queries.col,
+  if (!fs_path(http_response, stater, &col_path, 3, "collection", queries.col,
                queries.id)) {
     free_stater(stater);
     return 1;
@@ -26,20 +26,20 @@ int handle_request_delete(sdb_http_request_t* http_request,
   // Check if the file exists
   stater->error_body = "Requested document does not exist";
   stater->error_status = 404;
-  if (!fs_file_access(http_response, stater, db_path, F_OK)) {
+  if (!fs_file_access(http_response, stater, col_path, F_OK)) {
     free_stater(stater);
     return 1;
   }
 
   // Try to delete the file
-  if (remove(db_path) == 0) {
+  if (remove(col_path) == 0) {
     http_response->status = 200;
-    s_compile(&http_response->body, "\"Removed %s successfully\"", db_path);
+    s_compile(&http_response->body, "\"Removed %s successfully\"", col_path);
     free_stater(stater);
     return 0;
   } else {
     http_response->status = 500;
-    s_compile(&http_response->body, "Failed to remove %s", db_path);
+    s_compile(&http_response->body, "Failed to remove %s", col_path);
     free_stater(stater);
     return 1;
   }

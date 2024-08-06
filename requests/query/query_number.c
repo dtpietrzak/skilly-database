@@ -52,7 +52,7 @@ int handle_query_number(sdb_http_request_t* http_request, sdb_http_response_t* h
   for (int i = 0; i < filenames_count; i++) {
     if (sscanf(filenames[i], "%d", &filenames_as_numbers[i]) != 1) {
       http_response->status = 500;
-      s_set(&http_response->body, "Failed to convert filename to number");
+      s_set(&http_response->body, "Failed to convert file_name to number");
       free(index_path);
       free(filenames);
       free(filenames_as_numbers);
@@ -149,7 +149,6 @@ int handle_query_number(sdb_http_request_t* http_request, sdb_http_response_t* h
   for (int i = 0; i < filtered_count; i++) {
     filenames_to_get[i] = (char*)malloc(24 * sizeof(char));
     snprintf(filenames_to_get[i], 24, "%d", filtered_filenames_as_numbers[i]);
-    printf("Filename to get: %s\n", filenames_to_get[i]);
   }
 
   // get documents

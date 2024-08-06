@@ -22,7 +22,6 @@ bool contains_invalid_chars(char* str, const char* invalid_chars) {
 
 bool contains_only_valid_chars(char* str, const char* valid_chars) {
   for (const char* p = str; *p != '\0'; p++) {
-    printf("char: %c\n", *p);
     if (strchr(valid_chars, *p) == NULL) {
       return false;
     }
